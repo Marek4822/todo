@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <title>{% block title %}Todo{% endblock %}</title>
+  </head>
+  <body>
+    <div class="all_content" id="blur">
+    <main>
+      <header>
+        <div class="flex-container">
+          <div class="flex-items">
+            <div class="title">
+              <h1>Todo list</h1>
+            </div>
+            <div class="date">
+              <p>{{ current_time.strftime('%d.') }}
+              {{ current_time.strftime('%m.') }}
+              {{ current_time.strftime('%Y') }}</p>
+              <p>{{ current_time.strftime('%A') }}</p>
+            </div>
+            <button class="popover_add" onclick=toggle()>
+              <img src="static/add.svg" alt="add_button">
+            </button>
+          </div>
+          <div class="flex-items">
+            <div class="right">
+              <h1>Tasks completed: {{ true_complete }}/{{ table_size }}</h1>
+                <p>{{progres}}%</p>
+            </div>
+          </div>
+       </div>
+      </header>
+<main>
+    <div class="layout">
+    {% for todo in todo_list %}
+    <div class="content">
+      <a href="/delete/{{ todo.id }}" class="delete">
+
+        <img src="static/x.png" alt="x_button">
+      </a>
+        <p class="title">{{ todo.id }}.
+        {% if todo.title|length == 0%}
+          No title
+        {% else %}
+          {{ todo.title }}
+        {% endif %}
+        </p>
+        <!-- ------------------------------------------------------------------ -->
+        <div class="time">
+        <!-- {% if todo.complete: %}
+            <p>Task completed</p>
+        {% else %}
+            <p>not completed</p>
+        {% endif %} -->
+        <p>Created: {{ todo.date_create }} </p>
+        {% if todo.complete: %}
+        <p>Completed on: {{ todo.date_complete }}</p>  
+        {% elif todo.date_deadline %}
+        <p>Deadline: {{ todo.date_deadline.strftime('%Y-%m-%d') }}</p>
+        {% set difference = todo.date_deadline - current_time %}
+        {% if difference.days >= -1 %}
+            <p>Difference in days: {{ difference.days }}</p> 
+        {% else %}
+          <p>Deadline passed</p>
+        {% endif %}
+        {% else %}
+          <p>Deadline: None</p>
+          <p>Difference in days: None</p>
+        {% endif %}
+      </div>
+
+        {% if todo.complete: %}
+          <hr class="hrcompleted">
+        {% else %}
+          <hr class="hruncompleted">
+        {% endif %}
+        
+        <p>
+          {% if todo.description|length == 0 %}
+            No description
+          {% else %}
+            {{ todo.description }}
+          {% endif %}
+          </p>
+        
+        {% if todo.complete: %}
+          <hr class="hrcompleted">
+        {% else %}
+          <hr class="hruncompleted">
+        {% endif %}
+
+        <div class="com_container">
+        {% if todo.complete: %}
+          <a href="/complete/{{ todo.id }}" class="completed">Completed</a>
+        {% else %}
+          <a href="/complete/{{ todo.id }}" class="uncompleted">Uncompleted</a>
+        {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+  </div>
+  </main>
+</div>
+  <div id="popover_add">
+    <button class="close" onclick=toggle()>
+      <img src="static/x.png" alt="x_button">
+    </button>
+    <form action="/add" method="POST">
+      <div class="add">
+
+        <p>Title:</p>
+        <input type="text" name="title" placeholder="title"><br>
+        <p>Description:</p>
+        <textarea name="description" id="description" placeholder="description"></textarea><br>
+        <p>Date:</p>
+        <input type="date" name="date" min="{{ current_time.strftime('%Y-%m-%d') }}" ><br>
+        <button type="submit" >Add</button>
+      </div>
+    </form>
+  </div> 
+  <script type="text/javascript">
+    function toggle(){
+      const blur = document.getElementById('blur');
+      blur.classList.toggle('active')
+      
+      const popover_add = document.getElementById('popover_add');
+      popover_add.classList.toggle('active')
+    }
+  </script>
+  </body>
+</html>
